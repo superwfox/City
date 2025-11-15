@@ -12,7 +12,6 @@ import sudark2.Sudark.city.SecureZone;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static sudark2.Sudark.city.City.cityName;
 import static sudark2.Sudark.city.RewardsManager.showRewards;
 import static sudark2.Sudark.city.WorldManager.getReasonableLocation;
 

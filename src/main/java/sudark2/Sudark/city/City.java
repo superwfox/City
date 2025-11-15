@@ -1,5 +1,6 @@
 package sudark2.Sudark.city;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,6 +20,7 @@ public final class City extends JavaPlugin {
         cmd.setExecutor(new CityCommand());
         cmd.setTabCompleter(new CommandTabCompleter());
 
+        Bukkit.getPluginManager().registerEvents(new RewardsListener(), this);
 
     }
 

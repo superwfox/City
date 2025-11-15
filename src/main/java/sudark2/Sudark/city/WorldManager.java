@@ -7,6 +7,7 @@ import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 import static sudark2.Sudark.city.City.cityName;
@@ -25,17 +26,17 @@ public class WorldManager {
     public static void deleteWorld() throws IOException {
         World world = Bukkit.getWorld(cityName);
         if (world != null) {
-            saveWorld();
+            saveWorld(world);
             Bukkit.unloadWorld(world, false);
         }
         FileUtils.deleteDirectory(new File(Bukkit.getWorldContainer(), cityName));
     }
 
-    private static void saveWorld() {
-        for (int[][] posPair : posPairs) {
-
+    private static void saveWorld(World world) {
+        List<int[]> posPairs = FileManager.readSaveZones();
+        for (int[] posPair : posPairs) {
+            SecureZone.transferChunks(posPair, world);
         }
-
     }
 
     public static World createVoidWorld(String worldName) {

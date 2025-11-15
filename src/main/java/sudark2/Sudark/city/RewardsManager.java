@@ -12,7 +12,7 @@ public class RewardsManager {
     }
 
     private static final int INVENTORY_SIZE = 54;
-    private static final String TITLE = " 维度战利品管理|§0§lREWARDS";
+    public static final String TITLE = " 维度战利品管理|§0§lREWARDS";
 
     public static Inventory getRewards(int page) {
         ItemStack[] items = FileManager.readRewards();
