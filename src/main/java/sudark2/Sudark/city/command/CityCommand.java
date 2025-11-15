@@ -30,7 +30,7 @@ public class CityCommand implements CommandExecutor {
             case "rewards" -> showRewards(pl, args.length > 1 ? 0 : Integer.parseInt(args[1]));
             case "check" -> pl.teleport(getReasonableLocation(pl));
             case "back" ->
-                    pl.teleport(locs.get(pl.getName()) == null ? (pl.getBedLocation() == null ? Bukkit.getWorlds().getFirst().getSpawnLocation() : pl.getBedLocation()) : locs.get(pl.getName()));
+                    pl.teleport(locs.get(pl.getName()) == null ? (pl.getBedSpawnLocation() == null ? Bukkit.getWorlds().getFirst().getSpawnLocation() : pl.getBedLocation()) : locs.get(pl.getName()));
         }
         return false;
     }
