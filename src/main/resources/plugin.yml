@@ -1,0 +1,4 @@
+name: City
+version: '8'
+main: sudark2.Sudark.city.City
+api-version: '1.20'
