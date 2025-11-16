@@ -5,13 +5,14 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static sudark2.Sudark.city.City.templateName;
 
 public class SecureZone {
 
-    public static List<int[]> posPairs;
+    public static List<int[]> posPairs = new ArrayList<>();
 
     public static void transferChunks(int[] posPairs, World world) {
         int chunkX = posPairs[0];

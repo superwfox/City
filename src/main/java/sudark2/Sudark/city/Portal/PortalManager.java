@@ -20,17 +20,6 @@ import static sudark2.Sudark.city.World.SecureZone.posPairs;
 
 public class PortalManager implements Listener {
 
-//    static boolean canOpen = true;
-//
-//    @EventHandler
-//    public void onEntityPortalCreate(PlayerInteractEvent e) {
-//        Player pl = e.getPlayer();
-//        if (pl.isOp() && pl.getItemInHand().getType() == Material.FLINT_AND_STEEL && e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-//            canOpen = false;
-//            Bukkit.getScheduler().runTaskLater(get(), () -> canOpen = false, 20L);
-//        }
-//    }
-
     @EventHandler
     public void onPlayerPortal(EntityPortalEvent e) {
         Entity entity = e.getEntity();

@@ -3,6 +3,7 @@ package sudark2.Sudark.city.Rewards;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.*;
 import org.bukkit.Color;
 import org.bukkit.block.Block;
@@ -72,9 +73,10 @@ public class RewardsManager {
         );
 
         int[][] loc = getLocFromMap(target);
-        int[] existing = chestLocs.get(loc[0]);
+        String chunkCode = loc[0][0] + "," + loc[0][1];
+        int[] existing = chestLocs.get(chunkCode);
 
-        if (existing != null && Arrays.equals(existing, loc[1])) {
+        if (existing != null && equal3(existing, loc[1]) ) {
             pl.sendMessage("[§eCity§f] 此处已存在奖励箱");
             return;
         }
@@ -82,7 +84,7 @@ public class RewardsManager {
         if (existing != null) pl.sendMessage("[§eCity§f] 已覆盖该区块的旧奖励箱");
         else pl.sendMessage("[§eCity§f] 奖励箱已添加");
 
-        chestLocs.put(loc[0][0] + "," + loc[0][1], loc[1]);
+        chestLocs.put(chunkCode, loc[1]);
         FileManager.writeChestLocs();
     }
 
@@ -94,10 +96,11 @@ public class RewardsManager {
         }
 
         int[][] loc = getLocFromMap(target);
+        String chunkCode = loc[0][0] + "," + loc[0][1];
 
-        if (chestLocs.containsKey(loc[0]) && Arrays.equals(chestLocs.get(loc[0]), loc[1])) {
-            target.breakNaturally(new ItemStack(Material.AIR), false);
-            chestLocs.remove(loc[0]);
+        if (chestLocs.containsKey(chunkCode) && equal3(chestLocs.get(chunkCode), loc[1])) {
+            target.breakNaturally(new ItemStack(Material.AIR));
+            chestLocs.remove(chunkCode);
             FileManager.writeChestLocs();
             pl.sendMessage("[§eCity§f] 奖励箱已移除");
             return;
@@ -107,9 +110,13 @@ public class RewardsManager {
 
     }
 
+    public static boolean equal3(int[] a, int[] b) {
+        return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+    }
+
     public static void getAllChest(Player pl) {
 
-        TextComponent msg = Component.text("§e奖励箱§f列表：");
+        Component msg = Component.text("§e奖励箱§f列表：\n");
         int index = 0;
         for (String chunkCode : chestLocs.keySet()) {
             index++;
@@ -117,7 +124,7 @@ public class RewardsManager {
             int[] loc = Arrays.stream(chunkCode.split(",")).mapToInt(Integer::parseInt).toArray();
             msg = msg.append(
                     Component.text(index + ". (" + chunkCode + ") §e[" + (loc[0] * 16 + cloc[0]) + "," + cloc[1] + "," + (loc[1] * 16 + cloc[2]) + "]§r \n")
-                            .hoverEvent(Component.text("[点击传送至此位置]"))
+                            .hoverEvent(HoverEvent.showText(Component.text("[点击传送至此位置]")))
                             .clickEvent(ClickEvent.runCommand("/tp "
                                     + pl.getName() + " "
                                     + (loc[0] * 16 + cloc[0]) + " "

@@ -58,7 +58,7 @@ public class CityCommand implements CommandExecutor {
     }
 
     private void addChunkToPairs(Player pl) {
-        Chunk chunk = pl.getChunk();
+        Chunk chunk = pl.getLocation().getChunk();
         int cx = chunk.getX();
         int cz = chunk.getZ();
 

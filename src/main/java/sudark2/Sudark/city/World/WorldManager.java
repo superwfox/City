@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static sudark2.Sudark.city.City.*;
+import static sudark2.Sudark.city.World.SecureZone.posPairs;
 import static sudark2.Sudark.city.World.WorldGenerator.createVoidWorld;
 import static sudark2.Sudark.city.World.WorldGenerator.createWorld;
 import static sudark2.Sudark.city.command.CityCommand.locs;
@@ -44,7 +45,6 @@ public class WorldManager {
     }
 
     private static void saveWorld(World world) {
-        List<int[]> posPairs = FileManager.readSaveZones();
         for (int[] posPair : posPairs) {
             SecureZone.transferChunks(posPair, world);
         }

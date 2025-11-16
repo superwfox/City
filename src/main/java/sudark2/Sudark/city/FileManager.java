@@ -13,6 +13,7 @@ import java.util.*;
 
 import static sudark2.Sudark.city.City.get;
 import static sudark2.Sudark.city.Rewards.ChunkLoadListener.chestLocs;
+import static sudark2.Sudark.city.World.SecureZone.posPairs;
 
 public class FileManager {
 
@@ -35,6 +36,8 @@ public class FileManager {
 
         loadConfig();
         loadChestLocs();
+        loadRewards();
+        loadSaveZones();
     }
 
     public static void createConfig() {
@@ -102,30 +105,27 @@ public class FileManager {
         }
     }
 
-    public static List<int[]> readSaveZones() {
-        List<int[]> list = new ArrayList<>();
-
+    public static void loadSaveZones() {
         try (BufferedReader r = new BufferedReader(new FileReader(saveZone))) {
             String line;
             while ((line = r.readLine()) != null) {
-                String[] posPair = line.split("-");
+                String[] posPair = line.split(",");
                 int[] intPair = Arrays.stream(posPair)
                         .mapToInt(Integer::parseInt)
                         .toArray();
-                list.add(intPair);
+                posPairs.add(intPair);
             }
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("读取安全区域文件时发生 IO 错误！");
         }
 
-        return list;
     }
 
     public static void writeSaveZones(List<int[]> list) {
         try (BufferedWriter w = new BufferedWriter(new FileWriter(saveZone))) {
             for (int[] pair : list) {
-                w.write(pair[0] + "-" + pair[1]);
+                w.write(pair[0] + "," + pair[1]);
                 w.newLine();
             }
         } catch (IOException e) {
@@ -162,7 +162,7 @@ public class FileManager {
         }
     }
 
-    public static List<ItemStack> readRewards() {
+    public static void loadRewards() {
         String base64Data = "";
 
         try {
@@ -172,20 +172,17 @@ public class FileManager {
             System.err.println("读取战利品文件失败！");
         }
 
-        if (base64Data.isEmpty()) return new ArrayList<>();
+        if (base64Data.isEmpty()) return;
 
         try (
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(base64Data));
                 BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)
         ) {
             int size = dataInput.readInt();
-            List<ItemStack> rewards = new ArrayList<>(size);
 
             for (int i = 0; i < size; i++) {
-                rewards.add((ItemStack) dataInput.readObject());
+                Rewards.add((ItemStack) dataInput.readObject());
             }
-
-            return rewards;
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
