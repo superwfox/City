@@ -1,4 +1,4 @@
-package sudark2.Sudark.city;
+package sudark2.Sudark.city.World;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -22,7 +22,7 @@ public class SecureZone {
 
         for (int x = 0; x < 16; x++)
             for (int z = 0; z < 16; z++)
-                for (int y = 0; y < 256; y++) {
+                for (int y = 0; y < 320; y++) {
                     BlockState state = srcChunk.getBlock(x, y, z).getState();
                     chunk.getBlock(x, y, z).setBlockData(state.getBlockData(), false);
                 }

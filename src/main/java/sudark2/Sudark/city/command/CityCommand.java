@@ -8,12 +8,16 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import sudark2.Sudark.city.SecureZone;
+import sudark2.Sudark.city.FileManager;
+import sudark2.Sudark.city.Rewards.RewardsManager;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static sudark2.Sudark.city.RewardsManager.showRewards;
-import static sudark2.Sudark.city.WorldManager.getReasonableLocation;
+import static sudark2.Sudark.city.City.getMainWorld;
+import static sudark2.Sudark.city.World.SecureZone.posPairs;
+import static sudark2.Sudark.city.World.WorldManager.resetWorld;
+import static sudark2.Sudark.city.Rewards.RewardsManager.showRewards;
+import static sudark2.Sudark.city.World.WorldManager.getReasonableLocation;
 
 public class CityCommand implements CommandExecutor {
 
@@ -26,12 +30,16 @@ public class CityCommand implements CommandExecutor {
         switch (args[0]) {
             case "cancel" -> removeChunkFromPairs(pl);
             case "save" -> addChunkToPairs(pl);
-            case "rewards" -> showRewards(pl, args.length > 1 ? 0 : Integer.parseInt(args[1]));
+            case "rewards" -> showRewards(pl, args.length > 1 ? Integer.parseInt(args[1]) : 0);
             case "check" -> pl.teleport(getReasonableLocation(pl));
-            case "back" ->
-                    pl.teleport(locs.get(pl.getName()) == null ? (pl.getBedSpawnLocation() == null ? Bukkit.getWorlds().getFirst().getSpawnLocation() : pl.getBedLocation()) : locs.get(pl.getName()));
+            case "back" -> pl.teleport(locs.get(pl.getName()) == null ? (pl.getBedSpawnLocation() == null ? getMainWorld().getSpawnLocation() : pl.getBedLocation()) : locs.get(pl.getName()));
+            case "list" -> RewardsManager.getRewardsList(pl);
+            case "add" -> RewardsManager.add(pl);
+            case "remove" -> RewardsManager.remove(pl);
+            case "allchest" -> RewardsManager.getAllChest(pl);
+            case "reload" -> resetWorld();
         }
-        return false;
+        return true;
     }
 
     private void removeChunkFromPairs(Player pl) {
@@ -39,9 +47,10 @@ public class CityCommand implements CommandExecutor {
         int cx = chunk.getX();
         int cz = chunk.getZ();
 
-        for (int[] posPair : SecureZone.posPairs) {
+        for (int[] posPair : posPairs) {
             if (posPair[0] == cx && posPair[1] == cz) {
-                SecureZone.posPairs.remove(posPair);
+                posPairs.remove(posPair);
+                FileManager.writeSaveZones(posPairs);
                 pl.sendMessage("[§eCity§f] 从安全区域移除 区块[" + cx + "," + cz + "]");
                 return;
             }
@@ -53,7 +62,8 @@ public class CityCommand implements CommandExecutor {
         int cx = chunk.getX();
         int cz = chunk.getZ();
 
-        SecureZone.posPairs.add(new int[]{cx, cz});
+        posPairs.add(new int[]{cx, cz});
+        FileManager.writeSaveZones(posPairs);
         pl.sendMessage("[§eCity§f] 添加 区块[" + cx + "," + cz + "] 到安全区域");
     }
 

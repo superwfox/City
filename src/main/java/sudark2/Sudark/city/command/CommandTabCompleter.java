@@ -14,7 +14,12 @@ public class CommandTabCompleter implements TabCompleter {
             "save",
             "rewards",
             "check",
-            "back"
+            "back",
+            "list",
+            "add",
+            "remove",
+            "allchest",
+            "reload"
     );
 
     @Override

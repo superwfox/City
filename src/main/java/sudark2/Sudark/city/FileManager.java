@@ -1,5 +1,7 @@
 package sudark2.Sudark.city;
 
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -7,30 +9,97 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static sudark2.Sudark.city.City.get;
+import static sudark2.Sudark.city.Rewards.ChunkLoadListener.chestLocs;
 
 public class FileManager {
 
     public static File folder = get().getDataFolder();
     public static File saveZone = new File(folder, "saveZone.txt");
     public static File rewardsFile = new File(folder, "rewards.txt");
+    public static File rewardsChestFile = new File(folder, "chestLocs.txt");
+    public static File configFile = new File(folder, "config.yml");
+
+    public static int Percentage = 50;
+    public static List<ItemStack> Rewards = new ArrayList<>();
 
     public static void checkFile() {
         if (!folder.exists()) folder.mkdir();
 
+        checkFileAndCreate(saveZone);
+        checkFileAndCreate(rewardsFile);
+        checkFileAndCreate(rewardsChestFile);
+        createConfig();
 
-        if (!saveZone.exists()) {
-            try {
-                saveZone.createNewFile();
-            } catch (Exception e) {
-                System.out.println(e);
-            }
+        loadConfig();
+        loadChestLocs();
+    }
+
+    public static void createConfig() {
+        FileConfiguration config = new YamlConfiguration();
+
+        config.set("奖励箱概率.概率值", 500);
+        config.set("奖励箱概率.类型", "正整数 [1-1000]");
+        config.set("奖励箱概率.作用", "控制奖励箱每个槽位有多大概率刷出物品");
+        config.set("奖励箱概率.计算公式", " 概率值 / 1000");
+
+        try {
+            config.save(configFile);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
+    }
+
+    public static void loadConfig() {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+
+        Percentage = config.getInt("奖励箱概率.概率值");
+
+        if (Percentage < 1 || Percentage > 1000) {
+            Percentage = 500;
+            get().getLogger().warning("配置的奖励箱概率值不合法，已重置为默认值50");
+        }
+
+    }
+
+    public static void loadChestLocs() {
+        try (BufferedReader r = new BufferedReader(new FileReader(rewardsChestFile))) {
+            String line;
+            while ((line = r.readLine()) != null) {
+                String[] posPair = line.split(",");
+                if (posPair.length == 5) {
+                    posPair = Arrays.stream(posPair)
+                            .filter(s -> !s.isEmpty())
+                            .toArray(String[]::new);
+                    try {
+                        int[] intPair = Arrays.stream(posPair)
+                                .mapToInt(Integer::parseInt)
+                                .toArray();
+                        chestLocs.put(intPair[0] + "," + intPair[1], new int[]{intPair[2], intPair[3], intPair[4]});
+                    } catch (NumberFormatException e) {
+                        System.err.println("Error parsing integers from the line: " + line);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("读取奖励箱文件时发生 IO 错误！");
+        }
+    }
+
+    public static void writeChestLocs() {
+        try (BufferedWriter w = new BufferedWriter(new FileWriter(rewardsChestFile))) {
+            for (String pair : chestLocs.keySet()) {
+                w.write(pair + "," + chestLocs.get(pair)[0] + "," + chestLocs.get(pair)[1] + "," + chestLocs.get(pair)[2]);
+                w.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("写入奖励箱文件时发生 IO 错误！");
+        }
     }
 
     public static List<int[]> readSaveZones() {
@@ -65,13 +134,13 @@ public class FileManager {
         }
     }
 
-    public static void writeRewards(ItemStack[] rewards) {
+    public static void writeRewards(List<ItemStack> rewards) {
         String base64;
         try (
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)
         ) {
-            dataOutput.writeInt(rewards.length);
+            dataOutput.writeInt(rewards.size());
 
             for (ItemStack item : rewards) {
                 dataOutput.writeObject(item);
@@ -93,7 +162,7 @@ public class FileManager {
         }
     }
 
-    public static ItemStack[] readRewards() {
+    public static List<ItemStack> readRewards() {
         String base64Data = "";
 
         try {
@@ -103,24 +172,35 @@ public class FileManager {
             System.err.println("读取战利品文件失败！");
         }
 
-        if (base64Data.isEmpty()) return new ItemStack[0];
+        if (base64Data.isEmpty()) return new ArrayList<>();
 
         try (
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(base64Data));
                 BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)
         ) {
             int size = dataInput.readInt();
-            ItemStack[] rewards = new ItemStack[size];
+            List<ItemStack> rewards = new ArrayList<>(size);
 
             for (int i = 0; i < size; i++) {
-                rewards[i] = (ItemStack) dataInput.readObject();
+                rewards.add((ItemStack) dataInput.readObject());
             }
 
             return rewards;
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            throw new IllegalStateException("无法将 Base64 反序列化为 ItemStack[] 数组！", e);
+            throw new IllegalStateException("无法将 Base64 反序列化为 List<ItemStack> 列表！", e);
+        }
+    }
+
+
+    public static void checkFileAndCreate(File file) {
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
         }
     }
 
