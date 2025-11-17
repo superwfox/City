@@ -1,4 +1,4 @@
-# City - 中文说明文档
+# City - 中文说明文档 [English Version Documention](https://github.com/superwfox/City/blob/master/README_EN.md)
 
 一个专为 **Mohist 1.20.1** 混合端编写的每日重置城市生存核心插件  
 （本插件仅在 Mohist 1.20.1 上进行过完整的三天压力测试与功能验证，其他版本未作保证）
