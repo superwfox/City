@@ -26,18 +26,17 @@ public class PortalManager implements Listener {
         String worldName = entity.getWorld().getName();
 
         if (worldName.equals(cityName)) {
-            e.setTo(getMainWorld().getSpawnLocation());
+            Bukkit.getScheduler().runTaskLater(get(),()->entity.teleport(getMainWorld().getSpawnLocation()),1);
             return;
         }
         int[] chunkLoc;
-        if (posPairs == null) chunkLoc = new int[]{0, 0};
+        if (posPairs.isEmpty()) chunkLoc = new int[]{0, 0};
         else
             chunkLoc = posPairs.get(new Random().nextInt(posPairs.size()));
         int x = chunkLoc[0] * 16 + 8;
         int z = chunkLoc[1] * 16 + 8;
         int y = Bukkit.getWorld(cityName).getHighestBlockYAt(x, z);
         Location loc = new Location(Bukkit.getWorld(cityName), x, y + 1, z);
-        System.out.println(loc);
         entity.teleport(loc);
     }
 
@@ -47,18 +46,17 @@ public class PortalManager implements Listener {
         String worldName = pl.getWorld().getName();
 
         if (worldName.equals(cityName)) {
-            e.setTo(getMainWorld().getSpawnLocation());
+            Bukkit.getScheduler().runTaskLater(get(),()->pl.teleport(getMainWorld().getSpawnLocation()),1);
             return;
         }
         int[] chunkLoc;
-        if (posPairs == null) chunkLoc = new int[]{0, 0};
+        if (posPairs.isEmpty()) chunkLoc = new int[]{0, 0};
         else
             chunkLoc = posPairs.get(new Random().nextInt(posPairs.size()));
         int x = chunkLoc[0] * 16 + 8;
         int z = chunkLoc[1] * 16 + 8;
         int y = Bukkit.getWorld(cityName).getHighestBlockYAt(x, z);
         Location loc = new Location(Bukkit.getWorld(cityName), x, y + 1, z);
-        System.out.println(loc);
         Bukkit.getScheduler().runTaskLater(get(),()->pl.teleport(loc),1);
     }
 

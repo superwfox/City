@@ -3,11 +3,9 @@ package sudark2.Sudark.city.World;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.codehaus.plexus.util.FileUtils;
-import sudark2.Sudark.city.FileManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import static sudark2.Sudark.city.City.*;
 import static sudark2.Sudark.city.World.SecureZone.posPairs;
@@ -36,9 +34,9 @@ public class WorldManager {
             saveWorld(world);
             world.getPlayers().forEach(pl -> pl.kickPlayer("城市正在重置 请稍后重连"));
         }
-        createWorld(cityName);
         try {
             FileUtils.deleteDirectory(new File(Bukkit.getWorldContainer(), cityName));
+            createWorld(cityName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -48,6 +46,7 @@ public class WorldManager {
         for (int[] posPair : posPairs) {
             SecureZone.transferChunks(posPair, world);
         }
+        Bukkit.getWorld(templateName).save();
     }
 
     public static Location getReasonableLocation(Player pl) {

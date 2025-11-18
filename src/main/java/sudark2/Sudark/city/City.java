@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import sudark2.Sudark.city.Entities.EntityListener;
 import sudark2.Sudark.city.Portal.PortalManager;
 import sudark2.Sudark.city.Rewards.ChunkLoadListener;
 import sudark2.Sudark.city.command.CityCommand;
@@ -12,6 +13,7 @@ import sudark2.Sudark.city.command.CommandTabCompleter;
 import sudark2.Sudark.city.Rewards.RewardsListener;
 
 import static sudark2.Sudark.city.Clock.start;
+import static sudark2.Sudark.city.FileManager.getLevelName;
 import static sudark2.Sudark.city.World.WorldManager.checkWorld;
 
 public final class City extends JavaPlugin {
@@ -34,9 +36,11 @@ public final class City extends JavaPlugin {
             cmd.setExecutor(new CityCommand());
             cmd.setTabCompleter(new CommandTabCompleter());
         }
+
         Bukkit.getPluginManager().registerEvents(new RewardsListener(), this);
         Bukkit.getPluginManager().registerEvents(new ChunkLoadListener(), this);
         Bukkit.getPluginManager().registerEvents(new PortalManager(), this);
+        Bukkit.getPluginManager().registerEvents(new EntityListener(), this);
 
     }
 
@@ -45,6 +49,6 @@ public final class City extends JavaPlugin {
     }
 
     public static World getMainWorld() {
-        return Bukkit.getWorlds().getFirst();
+        return Bukkit.getWorld(getLevelName());
     }
 }

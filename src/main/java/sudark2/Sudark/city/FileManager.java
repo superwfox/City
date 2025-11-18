@@ -24,9 +24,11 @@ public class FileManager {
     public static File configFile = new File(folder, "config.yml");
 
     public static int Percentage = 50;
+    public static int LimitedNum = 20;
     public static List<ItemStack> Rewards = new ArrayList<>();
 
     public static void checkFile() {
+        System.out.println("已重载配置文件");
         if (!folder.exists()) folder.mkdir();
 
         checkFileAndCreate(saveZone);
@@ -40,6 +42,19 @@ public class FileManager {
         loadSaveZones();
     }
 
+    public static String getLevelName() {
+        Properties properties = new Properties();
+        File propertiesFile = new File("server.properties");
+
+        try (FileReader reader = new FileReader(propertiesFile)) {
+            properties.load(reader);
+            return properties.getProperty("level-name");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static void createConfig() {
         FileConfiguration config = new YamlConfiguration();
 
@@ -47,6 +62,10 @@ public class FileManager {
         config.set("奖励箱概率.类型", "正整数 [1-1000]");
         config.set("奖励箱概率.作用", "控制奖励箱每个槽位有多大概率刷出物品");
         config.set("奖励箱概率.计算公式", " 概率值 / 1000");
+
+        config.set("城市维度.玩家个人刷怪上限", 20);
+        config.set("城市维度.类型", "正整数");
+        config.set("城市维度.作用", "仅在城市维度生效，根据玩家数量动态调整僵尸生成阈值");
 
         try {
             config.save(configFile);
@@ -60,10 +79,16 @@ public class FileManager {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 
         Percentage = config.getInt("奖励箱概率.概率值");
+        LimitedNum = config.getInt("城市维度.刷怪上限");
 
         if (Percentage < 1 || Percentage > 1000) {
             Percentage = 500;
-            get().getLogger().warning("配置的奖励箱概率值不合法，已重置为默认值50");
+            get().getLogger().warning("配置的奖励箱概率值不合法，已重置为默认值500");
+        }
+
+        if (LimitedNum < 1) {
+            LimitedNum = 20;
+            get().getLogger().warning("配置的城市维度刷怪上限不合法，已重置为默认值20");
         }
 
     }
@@ -77,14 +102,11 @@ public class FileManager {
                     posPair = Arrays.stream(posPair)
                             .filter(s -> !s.isEmpty())
                             .toArray(String[]::new);
-                    try {
-                        int[] intPair = Arrays.stream(posPair)
-                                .mapToInt(Integer::parseInt)
-                                .toArray();
-                        chestLocs.put(intPair[0] + "," + intPair[1], new int[]{intPair[2], intPair[3], intPair[4]});
-                    } catch (NumberFormatException e) {
-                        System.err.println("Error parsing integers from the line: " + line);
-                    }
+
+                    int[] intPair = Arrays.stream(posPair)
+                            .mapToInt(Integer::parseInt)
+                            .toArray();
+                    chestLocs.put(intPair[0] + "," + intPair[1], new int[]{intPair[2], intPair[3], intPair[4]});
                 }
             }
         } catch (IOException e) {

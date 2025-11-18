@@ -5,11 +5,9 @@ import org.bukkit.generator.ChunkGenerator;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Random;
 
 import static sudark2.Sudark.city.City.*;
-import static sudark2.Sudark.city.Rewards.ChunkLoadListener.chunkCodes;
 
 
 public class WorldGenerator extends ChunkGenerator {
@@ -24,16 +22,9 @@ public class WorldGenerator extends ChunkGenerator {
     }
 
     public static void createWorld(String worldName) {
-        chunkCodes.clear();
         createVoidWorld(worldName);
         World world = Bukkit.getWorld(worldName);
-        Bukkit.unloadWorld(world, true);
-
-        try {
-            Thread.sleep(2000);  // 延迟2秒，确保世界彻底卸载
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Bukkit.unloadWorld(world, false);
 
         File folder = Bukkit.getWorldContainer();
 

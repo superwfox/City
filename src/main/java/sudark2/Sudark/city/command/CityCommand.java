@@ -14,6 +14,8 @@ import sudark2.Sudark.city.Rewards.RewardsManager;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static sudark2.Sudark.city.City.getMainWorld;
+import static sudark2.Sudark.city.FileManager.checkFile;
+import static sudark2.Sudark.city.Rewards.RewardsListener.opened;
 import static sudark2.Sudark.city.World.SecureZone.posPairs;
 import static sudark2.Sudark.city.World.WorldManager.resetWorld;
 import static sudark2.Sudark.city.Rewards.RewardsManager.showRewards;
@@ -32,12 +34,17 @@ public class CityCommand implements CommandExecutor {
             case "save" -> addChunkToPairs(pl);
             case "rewards" -> showRewards(pl, args.length > 1 ? Integer.parseInt(args[1]) : 0);
             case "check" -> pl.teleport(getReasonableLocation(pl));
-            case "back" -> pl.teleport(locs.get(pl.getName()) == null ? (pl.getBedSpawnLocation() == null ? getMainWorld().getSpawnLocation() : pl.getBedLocation()) : locs.get(pl.getName()));
+            case "back" ->
+                    pl.teleport(locs.get(pl.getName()) == null ? (pl.getBedSpawnLocation() == null ? getMainWorld().getSpawnLocation() : pl.getBedLocation()) : locs.get(pl.getName()));
             case "list" -> RewardsManager.getRewardsList(pl);
             case "add" -> RewardsManager.add(pl);
             case "remove" -> RewardsManager.remove(pl);
             case "allchest" -> RewardsManager.getAllChest(pl);
-            case "reload" -> resetWorld();
+            case "reload" -> {
+                resetWorld();
+                checkFile();
+                opened.clear();
+            }
         }
         return true;
     }

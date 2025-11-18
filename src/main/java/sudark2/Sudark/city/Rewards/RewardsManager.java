@@ -1,9 +1,9 @@
 package sudark2.Sudark.city.Rewards;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.*;
 import org.bukkit.Color;
 import org.bukkit.block.Block;
@@ -12,8 +12,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import sudark2.Sudark.city.FileManager;
 
-import java.util.Arrays;
+import java.util.*;
 
+import static sudark2.Sudark.city.City.cityName;
 import static sudark2.Sudark.city.FileManager.Rewards;
 import static sudark2.Sudark.city.Rewards.ChunkLoadListener.chestLocs;
 
@@ -76,7 +77,7 @@ public class RewardsManager {
         String chunkCode = loc[0][0] + "," + loc[0][1];
         int[] existing = chestLocs.get(chunkCode);
 
-        if (existing != null && equal3(existing, loc[1]) ) {
+        if (existing != null && equal3(existing, loc[1])) {
             pl.sendMessage("[§eCity§f] 此处已存在奖励箱");
             return;
         }
@@ -115,26 +116,47 @@ public class RewardsManager {
     }
 
     public static void getAllChest(Player pl) {
+        Location pLoc = pl.getLocation();
+        int playerChunkX = pLoc.getBlockX() >> 4;
+        int playerChunkZ = pLoc.getBlockZ() >> 4;
 
-        Component msg = Component.text("§e奖励箱§f列表：\n");
+        List<Map.Entry<String, int[]>> list = new ArrayList<>(chestLocs.entrySet());
+
+        list.sort(Comparator.comparingInt((Map.Entry<String, int[]> e) -> {
+            String[] parts = e.getKey().split(",");
+            int cx = Integer.parseInt(parts[0]);
+            int cz = Integer.parseInt(parts[1]);
+            return Math.abs(cx - playerChunkX) + Math.abs(cz - playerChunkZ);
+        }).reversed()); // 距离越大越靠前
+
+        ComponentBuilder builder = new ComponentBuilder("§e 奖励箱§f列表：");
         int index = 0;
-        for (String chunkCode : chestLocs.keySet()) {
-            index++;
-            int[] cloc = chestLocs.get(chunkCode);
-            int[] loc = Arrays.stream(chunkCode.split(",")).mapToInt(Integer::parseInt).toArray();
-            msg = msg.append(
-                    Component.text(index + ". (" + chunkCode + ") §e[" + (loc[0] * 16 + cloc[0]) + "," + cloc[1] + "," + (loc[1] * 16 + cloc[2]) + "]§r \n")
-                            .hoverEvent(HoverEvent.showText(Component.text("[点击传送至此位置]")))
-                            .clickEvent(ClickEvent.runCommand("/tp "
-                                    + pl.getName() + " "
-                                    + (loc[0] * 16 + cloc[0]) + " "
-                                    + (cloc[1] + 1) + " "
-                                    + (loc[1] * 16 + cloc[2])))
-            );
-        }
-        pl.sendMessage(msg);
-        pl.sendMessage("[§eCity§f] 共有§e§l " + index + "§r 个奖励箱");
 
+        for (Map.Entry<String, int[]> entry : list) {
+            index++;
+            String chunkCode = entry.getKey();
+            int[] cloc = entry.getValue();
+
+            String[] parts = chunkCode.split(",");
+            int cx = Integer.parseInt(parts[0]);
+            int cz = Integer.parseInt(parts[1]);
+            int dist = Math.abs(cx - playerChunkX) + Math.abs(cz - playerChunkZ);
+
+            int[] loc = Arrays.stream(parts).mapToInt(Integer::parseInt).toArray();
+            int x = loc[0] * 16 + cloc[0];
+            int y = cloc[1];
+            int z = loc[1] * 16 + cloc[2];
+
+            builder.append("\n " + index + ". (" + chunkCode + ") §e[" + x + "," + y + "," + z + "]§r")
+                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                            new ComponentBuilder("§e[点击传送至此位置]\n§7 》 距离: §f" + dist + " §7个区块").create()))
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                            "/execute in " + cityName.toLowerCase() + " as @s run tp " + x + " " + (y + 1) + " " + z));
+        }
+
+        BaseComponent[] msg = builder.create();
+        pl.spigot().sendMessage(msg);
+        pl.sendMessage("[§eCity§f] 共有§e§l " + index + "§r 个奖励箱");
     }
 
 
