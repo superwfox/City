@@ -1,0 +1,239 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 528482304 bytes. Error detail: G1 virtual space
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   This process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Zero Based Compressed Oops mode in which the Java heap is
+#     placed in the first 32GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 32GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_windows.cpp:3686), pid=4008, tid=2216
+#
+# JRE version:  (21.0.6+7) (build )
+# Java VM: OpenJDK 64-Bit Server VM (21.0.6+7-LTS, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Dmaven.multiModuleProjectDirectory=C:\Users\Sudark\IdeaProjects\City -Djansi.passthrough=true -Dmaven.home=D:\IntelliJ IDEA 2024.2.0.1\plugins\maven\lib\maven3 -Dclassworlds.conf=D:\IntelliJ IDEA 2024.2.0.1\plugins\maven\lib\maven3\bin\m2.conf -Dmaven.ext.class.path=D:\IntelliJ IDEA 2024.2.0.1\plugins\maven\lib\maven-event-listener.jar -javaagent:D:\IntelliJ IDEA 2024.2.0.1\lib\idea_rt.jar=1962:D:\IntelliJ IDEA 2024.2.0.1\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 org.codehaus.classworlds.Launcher -Didea.version=2024.2.0.1 package
+
+Host: AMD Ryzen 7 8845HS w/ Radeon 780M Graphics, 16 cores, 31G,  Windows 11 , 64 bit Build 22621 (10.0.22621.3672)
+Time: Sun Nov 16 23:48:05 2025  Windows 11 , 64 bit Build 22621 (10.0.22621.3672) elapsed time: 0.007126 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000018a7c16e410):  JavaThread "Unknown thread" [_thread_in_vm, id=2216, stack(0x0000001d74900000,0x0000001d74a00000) (1024K)]
+
+Stack: [0x0000001d74900000,0x0000001d74a00000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x6fb489]
+V  [jvm.dll+0x8dee5f]
+V  [jvm.dll+0x8e1258]
+V  [jvm.dll+0x8e19c3]
+V  [jvm.dll+0x299796]
+V  [jvm.dll+0x6f7c15]
+V  [jvm.dll+0x6ebb4a]
+V  [jvm.dll+0x374a6a]
+V  [jvm.dll+0x37c776]
+V  [jvm.dll+0x3d1195]
+V  [jvm.dll+0x3d1458]
+V  [jvm.dll+0x3467e3]
+V  [jvm.dll+0x34739b]
+V  [jvm.dll+0x8a6311]
+V  [jvm.dll+0x3de6d1]
+V  [jvm.dll+0x88ea73]
+V  [jvm.dll+0x474c5e]
+V  [jvm.dll+0x476721]
+C  [jli.dll+0x53a5]
+C  [ucrtbase.dll+0x29333]
+C  [KERNEL32.DLL+0x1257d]
+C  [ntdll.dll+0x5af28]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007ffe24e65148, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+Total: 0
+
+Other Threads:
+  0x0000018a7eb1fa40 WorkerThread "GC Thread#0"                     [id=29700, stack(0x0000001d74a00000,0x0000001d74b00000) (1024K)]
+  0x0000018a7c1e48e0 ConcurrentGCThread "G1 Main Marker"            [id=27344, stack(0x0000001d74b00000,0x0000001d74c00000) (1024K)]
+  0x0000018a7c1e5300 WorkerThread "G1 Conc#0"                       [id=25540, stack(0x0000001d74c00000,0x0000001d74d00000) (1024K)]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffe2453a397]
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007ffe24ed9cb0] Heap_lock - owner thread: 0x0000018a7c16e410
+
+Heap address: 0x000000060b400000, size: 8012 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+
+CDS archive(s) mapped at: [0x0000000000000000-0x0000000000000000-0x0000000000000000), size 0, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 1.
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0, Narrow klass range: 0x0
+
+GC Precious Log:
+ CardTable entry size: 512
+ Card Set container configuration: InlinePtr #cards 4 size 8 Array Of Cards #cards 32 size 80 Howl #buckets 8 coarsen threshold 7372 Howl Bitmap #cards 1024 size 144 coarsen threshold 921 Card regions per heap region 1 cards per card region 8192
+
+Heap:
+ garbage-first heap   total 0K, used 0K [0x000000060b400000, 0x0000000800000000)
+  region size 4096K, 0 young (0K), 0 survivors (0K)
+
+[error occurred during error reporting (printing heap information), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffe24937b59]
+GC Heap History (0 events):
+No events
+
+Dll operation events (1 events):
+Event: 0.005 Loaded shared library C:\Program Files\Zulu\zulu-21\bin\java.dll
+
+Deoptimization events (0 events):
+No events
+
+Classes loaded (0 events):
+No events
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+ZGC Phase Switch (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Memory protections (0 events):
+No events
+
+Nmethod flushes (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x00007ff714a60000 - 0x00007ff714a6e000 	C:\Program Files\Zulu\zulu-21\bin\java.exe
+0x00007ffed1cb0000 - 0x00007ffed1ec7000 	C:\Windows\SYSTEM32\ntdll.dll
+0x00007ffed13c0000 - 0x00007ffed1484000 	C:\Windows\System32\KERNEL32.DLL
+0x00007ffecf430000 - 0x00007ffecf7dc000 	C:\Windows\System32\KERNELBASE.dll
+0x00007ffecf8d0000 - 0x00007ffecf9e1000 	C:\Windows\System32\ucrtbase.dll
+0x00007ffebdf50000 - 0x00007ffebdf69000 	C:\Program Files\Zulu\zulu-21\bin\jli.dll
+0x00007ffec4540000 - 0x00007ffec455b000 	C:\Program Files\Zulu\zulu-21\bin\VCRUNTIME140.dll
+0x00007ffed1050000 - 0x00007ffed11fe000 	C:\Windows\System32\USER32.dll
+0x00007ffecefe0000 - 0x00007ffecf006000 	C:\Windows\System32\win32u.dll
+0x00007ffebd910000 - 0x00007ffebdba3000 	C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.3672_none_2713b9d173822955\COMCTL32.dll
+0x00007ffed00a0000 - 0x00007ffed00c9000 	C:\Windows\System32\GDI32.dll
+0x00007ffed0e40000 - 0x00007ffed0ee7000 	C:\Windows\System32\msvcrt.dll
+0x00007ffecf0e0000 - 0x00007ffecf1f9000 	C:\Windows\System32\gdi32full.dll
+0x00007ffecf040000 - 0x00007ffecf0da000 	C:\Windows\System32\msvcp_win.dll
+0x00007ffecfb90000 - 0x00007ffecfbc1000 	C:\Windows\System32\IMM32.DLL
+0x00007ffec4080000 - 0x00007ffec408c000 	C:\Program Files\Zulu\zulu-21\bin\vcruntime140_1.dll
+0x00007ffe259b0000 - 0x00007ffe25a3e000 	C:\Program Files\Zulu\zulu-21\bin\msvcp140.dll
+0x00007ffe241e0000 - 0x00007ffe24fbd000 	C:\Program Files\Zulu\zulu-21\bin\server\jvm.dll
+0x00007ffecffe0000 - 0x00007ffed0092000 	C:\Windows\System32\ADVAPI32.dll
+0x00007ffed0fa0000 - 0x00007ffed104a000 	C:\Windows\System32\sechost.dll
+0x00007ffecf010000 - 0x00007ffecf038000 	C:\Windows\System32\bcrypt.dll
+0x00007ffed18b0000 - 0x00007ffed19c5000 	C:\Windows\System32\RPCRT4.dll
+0x00007ffecf9f0000 - 0x00007ffecfa61000 	C:\Windows\System32\WS2_32.dll
+0x00007ffecde70000 - 0x00007ffecdebd000 	C:\Windows\SYSTEM32\POWRPROF.dll
+0x00007ffec91f0000 - 0x00007ffec9224000 	C:\Windows\SYSTEM32\WINMM.dll
+0x00007ffec5670000 - 0x00007ffec567a000 	C:\Windows\SYSTEM32\VERSION.dll
+0x00007ffecde50000 - 0x00007ffecde63000 	C:\Windows\SYSTEM32\UMPDC.dll
+0x00007ffece100000 - 0x00007ffece118000 	C:\Windows\SYSTEM32\kernel.appcore.dll
+0x00007ffec3fe0000 - 0x00007ffec3fea000 	C:\Program Files\Zulu\zulu-21\bin\jimage.dll
+0x00007ffecc550000 - 0x00007ffecc782000 	C:\Windows\SYSTEM32\DBGHELP.DLL
+0x00007ffecfbd0000 - 0x00007ffecff58000 	C:\Windows\System32\combase.dll
+0x00007ffed1b90000 - 0x00007ffed1c67000 	C:\Windows\System32\OLEAUT32.dll
+0x00007ffeae700000 - 0x00007ffeae732000 	C:\Windows\SYSTEM32\dbgcore.DLL
+0x00007ffecf7e0000 - 0x00007ffecf85b000 	C:\Windows\System32\bcryptPrimitives.dll
+0x00007ffec3ff0000 - 0x00007ffec4000000 	C:\Program Files\Zulu\zulu-21\bin\instrument.dll
+0x00007ffeaee50000 - 0x00007ffeaee72000 	C:\Program Files\Zulu\zulu-21\bin\java.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files\Zulu\zulu-21\bin;C:\Windows\SYSTEM32;C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.3672_none_2713b9d173822955;C:\Program Files\Zulu\zulu-21\bin\server
+
+VM Arguments:
+jvm_args: -Dmaven.multiModuleProjectDirectory=C:\Users\Sudark\IdeaProjects\City -Djansi.passthrough=true -Dmaven.home=D:\IntelliJ IDEA 2024.2.0.1\plugins\maven\lib\maven3 -Dclassworlds.conf=D:\IntelliJ IDEA 2024.2.0.1\plugins\maven\lib\maven3\bin\m2.conf -Dmaven.ext.class.path=D:\IntelliJ IDEA 2024.2.0.1\plugins\maven\lib\maven-event-listener.jar -javaagent:D:\IntelliJ IDEA 2024.2.0.1\lib\idea_rt.jar=1962:D:\IntelliJ IDEA 2024.2.0.1\bin -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 
+java_command: org.codehaus.classworlds.Launcher -Didea.version=2024.2.0.1 package
+java_class_path (initial): D:\IntelliJ IDEA 2024.2.0.1\plugins\maven\lib\maven3\boot\plexus-classworlds-2.8.0.jar;D:\IntelliJ IDEA 2024.2.0.1\plugins\maven\lib\maven3\boot\plexus-classworlds.license
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 12                                        {product} {ergonomic}
+     uint ConcGCThreads                            = 3                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 13                                        {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 4194304                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 528482304                                 {product} {ergonomic}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 8401190912                                {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 4194304                                   {product} {ergonomic}
+   size_t MinHeapSize                              = 8388608                                   {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 7602480                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122027880                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122027880                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 8401190912                             {manageable} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags foldmultilines=false
+ #1: stderr all=off uptime,level,tags foldmultilines=false
+
+Environment Variables:
+PATH=C:\Program Files\Zulu\zulu-21\bin\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;D:\Git\cmd;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Users\Sudark\AppData\Local\Microsoft\WindowsApps;C:\Users\Sudark\AppData\Local\Programs\Microsoft VS Code\bin
+USERNAME=Sudark
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=AMD64 Family 25 Model 117 Stepping 2, AuthenticAMD
+TMP=C:\Users\Sudark\AppData\Local\Temp
+TEMP=C:\Users\Sudark\AppData\Local\Temp
+
+
+
+
+Periodic native trim disabled
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 11 , 64 bit Build 22621 (10.0.22621.3672)
+OS uptime: 8 days 6:46 hours
+
+CPU: total 16 (initial active 16) (16 cores per cpu, 2 threads per core) family 25 model 117 stepping 2 microcode 0x0, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4a, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, adx, avx512f, avx512dq, avx512cd, avx512bw, avx512vl, sha, fma, vzeroupper, avx512_vpopcntdq, avx512_vpclmulqdq, avx512_vaes, avx512_vnni, clflush, clflushopt, avx512_vbmi2, avx512_vbmi, rdtscp, rdpid, fsrm, gfni, avx512_bitalg, f16c, pku, cet_ss, avx512_ifma
+Processor Information for the first 16 processors :
+  Max Mhz: 3801, Current Mhz: 3801, Mhz Limit: 3801
+
+Memory: 4k page, system-wide physical 32042M (7212M free)
+TotalPageFile size 57522M (AvailPageFile size 247M)
+current process WorkingSet (physical memory assigned to process): 12M, peak: 12M
+current process commit charge ("private bytes"): 71M, peak: 575M
+
+vm_info: OpenJDK 64-Bit Server VM (21.0.6+7-LTS) for windows-amd64 JRE (21.0.6+7-LTS) (Zulu21.40+17-CA), built on 2025-01-07T13:04:52Z by "zulu_re" with MS VC++ 17.1 (VS2022)
+
+END.
