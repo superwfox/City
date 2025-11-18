@@ -3,6 +3,23 @@
 A daily-reset city survival core plugin specifically written and thoroughly tested for **Mohist 1.20.1**  
 (This version has only been fully tested on Mohist 1.20.1 for three consecutive days under real load. Compatibility with other versions is not guaranteed.)
 
+
+## City Plugin Commands (All commands are OP-only by default)
+
+| Command               | Arguments              | Description                                                  |
+|-----------------------|------------------------|--------------------------------------------------------------|
+| `/city save`          | none                   | Marks the current chunk as a safe zone (persists after reset)|
+| `/city cancel`        | none                   | Removes safe-zone protection from the current chunk         |
+| `/city rewards`       | `[page, optional]`     | Opens the global reward pool editor (54 slots, paginated)    |
+| `/city add`           | none (target block)    | Registers the targeted block as a reward chest               |
+| `/city remove`        | none (target chest)    | Unregisters the targeted reward chest                        |
+| `/city allchest`      | none                   | Lists all reward chests with clickable teleport links        |
+| `/city check`         | none                   | Manually enters the city dimension (coordinate mapping)      |
+| `/city back`          | none                   | Returns to the location before entering the city dimension  |
+| `/city reload`        | none                   | Manually triggers full reset + config reload + clears opened chests |
+
+> Permissions are controlled via `plugin.yml` — all commands require OP by default
+
 ## Feature Details
 
 ### 1. Daily Automatic Reset
