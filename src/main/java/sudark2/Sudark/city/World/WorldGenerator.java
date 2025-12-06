@@ -14,31 +14,34 @@ public class WorldGenerator extends ChunkGenerator {
 
     public static void createVoidWorld(String worldName) {
         WorldCreator creator = new WorldCreator(worldName);
-        creator.environment(World.Environment.NORMAL)
-                .type(WorldType.FLAT)
-                .generateStructures(false)
-                .generator(new VoidChunkGenerator());
+        creator.environment(World.Environment.NORMAL).type(WorldType.FLAT).generateStructures(false).generator(new VoidChunkGenerator());
         creator.createWorld();
     }
 
-    public static void createWorld(String worldName) {
-        createVoidWorld(worldName);
-        World world = Bukkit.getWorld(worldName);
-        Bukkit.unloadWorld(world, false);
+    public static void createWorld() {
+        World world = Bukkit.getWorld(cityName);
+        if (world != null) Bukkit.unloadWorld(world, false);
+        else createVoidWorld(cityName);
+
+        World template = Bukkit.getWorld(templateName);
+        if (template != null) template.save();
 
         File folder = Bukkit.getWorldContainer();
 
-        File cityWorld = new File(folder, worldName + "/region");
+        File cityWorld = new File(folder, cityName + "/region");
         File templateWorld = new File(folder, templateName + "/region");
 
+        File cityEntities = new File(folder, cityName + "/entities");
+        File templateEntities = new File(folder, templateName + "/entities");
+
         try {
-            if (cityWorld.exists()) {
-                FileUtils.deleteDirectory(cityWorld);
-            }
-            if (templateWorld.exists()) {
-                FileUtils.copyDirectory(templateWorld, cityWorld);
-            }
-            createVoidWorld(worldName);
+            if (cityWorld.exists()) FileUtils.deleteDirectory(cityWorld);
+            if (cityEntities.exists()) FileUtils.deleteDirectory(cityEntities);
+
+            if (templateWorld.exists()) FileUtils.copyDirectory(templateWorld, cityWorld);
+            if (templateEntities.exists()) FileUtils.copyDirectory(templateEntities, cityEntities);
+
+            createVoidWorld(cityName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,6 +53,7 @@ public class WorldGenerator extends ChunkGenerator {
             return createChunkData(world);
         }
     }
+
 }
 
 

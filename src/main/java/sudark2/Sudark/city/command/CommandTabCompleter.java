@@ -16,9 +16,6 @@ public class CommandTabCompleter implements TabCompleter {
             "check",
             "back",
             "list",
-            "add",
-            "remove",
-            "allchest",
             "reload"
     );
 

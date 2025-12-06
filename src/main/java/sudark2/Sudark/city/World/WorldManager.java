@@ -2,10 +2,6 @@ package sudark2.Sudark.city.World;
 
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.codehaus.plexus.util.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 import static sudark2.Sudark.city.City.*;
 import static sudark2.Sudark.city.World.SecureZone.posPairs;
@@ -21,9 +17,9 @@ public class WorldManager {
     public static void checkWorld() {
         if (Bukkit.getWorld(templateName) == null) {
             createVoidWorld(templateName);
-            templateWorld = Bukkit.getWorld(templateName);
-            createWorld(cityName);
         }
+        createWorld();
+        createVoidWorld("fake-World-to-avoid-screen");
     }
 
     public static void resetWorld() {
@@ -34,24 +30,18 @@ public class WorldManager {
             saveWorld(world);
             world.getPlayers().forEach(pl -> pl.kickPlayer("城市正在重置 请稍后重连"));
         }
-        try {
-            FileUtils.deleteDirectory(new File(Bukkit.getWorldContainer(), cityName));
-            createWorld(cityName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        createWorld();
     }
 
     private static void saveWorld(World world) {
         for (int[] posPair : posPairs) {
             SecureZone.transferChunks(posPair, world);
         }
-        Bukkit.getWorld(templateName).save();
     }
 
-    public static Location getReasonableLocation(Player pl) {
+    public static Location getReasonableLocation(Player pl,String worldName) {
         Location loc = pl.getLocation();
-        World world = Bukkit.getWorld(templateName);
+        World world = Bukkit.getWorld(worldName);
         locs.put(pl.getName(), loc);
         int x = loc.getBlockX();
         int z = loc.getBlockZ();

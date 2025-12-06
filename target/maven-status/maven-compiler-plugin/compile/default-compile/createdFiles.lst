@@ -7,8 +7,8 @@ sudark2\Sudark\city\FileManager.class
 sudark2\Sudark\city\command\CityCommand.class
 sudark2\Sudark\city\Clock.class
 sudark2\Sudark\city\Rewards\ChunkLoadListener.class
-sudark2\Sudark\city\Entities\EntityListener.class
 sudark2\Sudark\city\Rewards\RewardsManager.class
 sudark2\Sudark\city\Rewards\RewardsListener.class
 sudark2\Sudark\city\World\WorldGenerator$VoidChunkGenerator.class
 sudark2\Sudark\city\City.class
+sudark2\Sudark\city\Portal\PortalManager$1.class

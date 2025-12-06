@@ -1,9 +1,12 @@
 package sudark2.Sudark.city.Rewards;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,8 +21,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static sudark2.Sudark.city.City.cityName;
+import static sudark2.Sudark.city.City.templateName;
 import static sudark2.Sudark.city.FileManager.Rewards;
-import static sudark2.Sudark.city.Rewards.ChunkLoadListener.chestLocs;
 import static sudark2.Sudark.city.Rewards.RewardsManager.*;
 
 public class RewardsListener implements Listener {
@@ -46,7 +50,6 @@ public class RewardsListener implements Listener {
 
         Player pl = (Player) e.getPlayer();
         pl.sendMessage("[§eCity§f] 战利品已保存");
-
     }
 
     public static ConcurrentHashMap<String, Set<String>> opened = new ConcurrentHashMap<>();
@@ -56,22 +59,27 @@ public class RewardsListener implements Listener {
         Player pl = e.getPlayer();
         String name = pl.getName();
         Block bl = e.getClickedBlock();
-        if (bl == null || bl.getType() != Material.CHEST) return;
 
-        int[][] locs = getLocFromMap(bl);
+        if (!pl.getWorld().getName().equals(cityName)) return;
 
-        String chunkCode = locs[0][0] +"," + locs[0][1];
-        if (chestLocs.containsKey(chunkCode) && equal3(chestLocs.get(chunkCode), locs[1])) {
+        if (bl == null) return;
+        Material m = bl.getType();
+        if (m != Material.CHEST && m != Material.BARREL) return;
 
-            opened.putIfAbsent(name,new HashSet<>());
+        Location checkLoc = bl.getLocation();
+        checkLoc.setWorld(Bukkit.getWorld(templateName));
+        String chestCode = checkLoc.toString();
 
-            if (opened.get(name).contains(chunkCode)) return;
+        if (checkLoc.getBlock().getType() == m) {
+            opened.putIfAbsent(name, new HashSet<>());
 
-            opened.get(name).add(chunkCode);
+            if (opened.get(name).contains(chestCode)) return;
+
+            opened.get(name).add(chestCode);
 
             BlockState state = bl.getState();
-            if (state instanceof Chest chest) {
-                Inventory inv = chest.getBlockInventory();
+            if (state instanceof Container container) {
+                Inventory inv = container.getInventory();
                 Random rand = new Random();
 
                 if (Rewards.isEmpty()) return;

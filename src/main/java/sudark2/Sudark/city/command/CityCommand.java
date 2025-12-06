@@ -3,6 +3,7 @@ package sudark2.Sudark.city.command;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,7 +14,7 @@ import sudark2.Sudark.city.Rewards.RewardsManager;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static sudark2.Sudark.city.City.getMainWorld;
+import static sudark2.Sudark.city.City.*;
 import static sudark2.Sudark.city.FileManager.checkFile;
 import static sudark2.Sudark.city.Rewards.RewardsListener.opened;
 import static sudark2.Sudark.city.World.SecureZone.posPairs;
@@ -27,25 +28,41 @@ public class CityCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        if (!(sender instanceof Player pl)) return false;
+        if (sender instanceof Player pl) {
 
-        switch (args[0]) {
-            case "cancel" -> removeChunkFromPairs(pl);
-            case "save" -> addChunkToPairs(pl);
-            case "rewards" -> showRewards(pl, args.length > 1 ? Integer.parseInt(args[1]) : 0);
-            case "check" -> pl.teleport(getReasonableLocation(pl));
-            case "back" ->
-                    pl.teleport(locs.get(pl.getName()) == null ? (pl.getBedSpawnLocation() == null ? getMainWorld().getSpawnLocation() : pl.getBedLocation()) : locs.get(pl.getName()));
-            case "list" -> RewardsManager.getRewardsList(pl);
-            case "add" -> RewardsManager.add(pl);
-            case "remove" -> RewardsManager.remove(pl);
-            case "allchest" -> RewardsManager.getAllChest(pl);
-            case "reload" -> {
-                resetWorld();
-                checkFile();
-                opened.clear();
+            switch (args[0]) {
+                case "cancel" -> removeChunkFromPairs(pl);
+                case "save" -> addChunkToPairs(pl);
+                case "rewards" -> showRewards(pl, args.length > 1 ? Integer.parseInt(args[1]) : 0);
+                case "check" -> pl.teleport(getReasonableLocation(pl, templateName));
+                case "back" ->
+                        pl.teleport(locs.get(pl.getName()) == null ? (pl.getBedSpawnLocation() == null ? getMainWorld().getSpawnLocation() : pl.getBedLocation()) : locs.get(pl.getName()));
+                case "list" -> RewardsManager.getRewardsList(pl);
+//                case "add" -> RewardsManager.add(pl);
+//                case "remove" -> RewardsManager.remove(pl);
+//                case "allchest" -> RewardsManager.getAllChest(pl);
+                case "reload" -> {
+                    resetWorld();
+                    checkFile();
+                    opened.clear();
+                }
             }
         }
+
+        if (sender instanceof CommandBlock cb) {
+            if (args.length < 4) {
+                System.out.println("[City] /city tp 后需要三个数字作为坐标");
+                return false;
+            }
+
+            float x = Float.parseFloat(args[1]);
+            float y = Float.parseFloat(args[2]);
+            float z = Float.parseFloat(args[3]);
+
+            cb.getLocation().getNearbyPlayers(6).forEach(pl -> pl.teleport(new Location(Bukkit.getWorld(cityName), x, y, z)));
+        }
+
+
         return true;
     }
 

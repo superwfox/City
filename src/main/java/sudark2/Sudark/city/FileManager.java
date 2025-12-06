@@ -20,11 +20,10 @@ public class FileManager {
     public static File folder = get().getDataFolder();
     public static File saveZone = new File(folder, "saveZone.txt");
     public static File rewardsFile = new File(folder, "rewards.txt");
-    public static File rewardsChestFile = new File(folder, "chestLocs.txt");
+    //public static File rewardsChestFile = new File(folder, "chestLocs.txt");
     public static File configFile = new File(folder, "config.yml");
 
     public static int Percentage = 50;
-    public static int LimitedNum = 20;
     public static List<ItemStack> Rewards = new ArrayList<>();
 
     public static void checkFile() {
@@ -33,11 +32,11 @@ public class FileManager {
 
         checkFileAndCreate(saveZone);
         checkFileAndCreate(rewardsFile);
-        checkFileAndCreate(rewardsChestFile);
+        //checkFileAndCreate(rewardsChestFile);
         createConfig();
 
         loadConfig();
-        loadChestLocs();
+        // loadChestLocs();
         loadRewards();
         loadSaveZones();
     }
@@ -56,16 +55,14 @@ public class FileManager {
     }
 
     public static void createConfig() {
+        if (configFile.exists()) return;
+
         FileConfiguration config = new YamlConfiguration();
 
         config.set("奖励箱概率.概率值", 500);
         config.set("奖励箱概率.类型", "正整数 [1-1000]");
         config.set("奖励箱概率.作用", "控制奖励箱每个槽位有多大概率刷出物品");
         config.set("奖励箱概率.计算公式", " 概率值 / 1000");
-
-        config.set("城市维度.玩家个人刷怪上限", 20);
-        config.set("城市维度.类型", "正整数");
-        config.set("城市维度.作用", "仅在城市维度生效，根据玩家数量动态调整僵尸生成阈值");
 
         try {
             config.save(configFile);
@@ -79,53 +76,47 @@ public class FileManager {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 
         Percentage = config.getInt("奖励箱概率.概率值");
-        LimitedNum = config.getInt("城市维度.刷怪上限");
 
         if (Percentage < 1 || Percentage > 1000) {
             Percentage = 500;
             get().getLogger().warning("配置的奖励箱概率值不合法，已重置为默认值500");
         }
 
-        if (LimitedNum < 1) {
-            LimitedNum = 20;
-            get().getLogger().warning("配置的城市维度刷怪上限不合法，已重置为默认值20");
-        }
-
     }
 
-    public static void loadChestLocs() {
-        try (BufferedReader r = new BufferedReader(new FileReader(rewardsChestFile))) {
-            String line;
-            while ((line = r.readLine()) != null) {
-                String[] posPair = line.split(",");
-                if (posPair.length == 5) {
-                    posPair = Arrays.stream(posPair)
-                            .filter(s -> !s.isEmpty())
-                            .toArray(String[]::new);
+//    public static void loadChestLocs() {
+//        try (BufferedReader r = new BufferedReader(new FileReader(rewardsChestFile))) {
+//            String line;
+//            while ((line = r.readLine()) != null) {
+//                String[] posPair = line.split(",");
+//                if (posPair.length == 5) {
+//                    posPair = Arrays.stream(posPair)
+//                            .filter(s -> !s.isEmpty())
+//                            .toArray(String[]::new);
+//
+//                    int[] intPair = Arrays.stream(posPair)
+//                            .mapToInt(Integer::parseInt)
+//                            .toArray();
+//                    chestLocs.put(intPair[0] + "," + intPair[1], new int[]{intPair[2], intPair[3], intPair[4]});
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            System.err.println("读取奖励箱文件时发生 IO 错误！");
+//        }
+//    }
 
-                    int[] intPair = Arrays.stream(posPair)
-                            .mapToInt(Integer::parseInt)
-                            .toArray();
-                    chestLocs.put(intPair[0] + "," + intPair[1], new int[]{intPair[2], intPair[3], intPair[4]});
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("读取奖励箱文件时发生 IO 错误！");
-        }
-    }
-
-    public static void writeChestLocs() {
-        try (BufferedWriter w = new BufferedWriter(new FileWriter(rewardsChestFile))) {
-            for (String pair : chestLocs.keySet()) {
-                w.write(pair + "," + chestLocs.get(pair)[0] + "," + chestLocs.get(pair)[1] + "," + chestLocs.get(pair)[2]);
-                w.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("写入奖励箱文件时发生 IO 错误！");
-        }
-    }
+//    public static void writeChestLocs() {
+//        try (BufferedWriter w = new BufferedWriter(new FileWriter(rewardsChestFile))) {
+//            for (String pair : chestLocs.keySet()) {
+//                w.write(pair + "," + chestLocs.get(pair)[0] + "," + chestLocs.get(pair)[1] + "," + chestLocs.get(pair)[2]);
+//                w.newLine();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            System.err.println("写入奖励箱文件时发生 IO 错误！");
+//        }
+//    }
 
     public static void loadSaveZones() {
         try (BufferedReader r = new BufferedReader(new FileReader(saveZone))) {
