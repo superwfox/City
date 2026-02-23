@@ -34,7 +34,7 @@ public class WorldManager {
     }
 
     private static void saveWorld(World world) {
-        for (int[] posPair : posPairs) {
+        for (Long posPair : posPairs) {
             SecureZone.transferChunks(posPair, world);
         }
     }

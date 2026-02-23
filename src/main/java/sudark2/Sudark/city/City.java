@@ -6,7 +6,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import sudark2.Sudark.city.Portal.PortalManager;
-import sudark2.Sudark.city.Rewards.ChunkLoadListener;
+import sudark2.Sudark.city.World.WorldProtectListener;
 import sudark2.Sudark.city.command.CityCommand;
 import sudark2.Sudark.city.command.CommandTabCompleter;
 import sudark2.Sudark.city.Rewards.RewardsListener;
@@ -19,6 +19,7 @@ public final class City extends JavaPlugin {
 
     public static String cityName = "City-World";
     public static String templateName = "Template-World";
+    public static World templateWorld;
 
     @Override
     public void onEnable() {
@@ -36,8 +37,10 @@ public final class City extends JavaPlugin {
         }
 
         Bukkit.getPluginManager().registerEvents(new RewardsListener(), this);
-        Bukkit.getPluginManager().registerEvents(new ChunkLoadListener(), this);
         Bukkit.getPluginManager().registerEvents(new PortalManager(), this);
+        Bukkit.getPluginManager().registerEvents(new WorldProtectListener(), this);
+
+        templateWorld = Bukkit.getWorld(templateName);
 
     }
 

@@ -5,5 +5,9 @@ api-version: '1.20'
 commands:
   city:
     description: 城市维度命令
-    usage: /city <cancel|save|rewards|check|back>
-    permission: operator
+    usage: /city <cancel|save|rewards|check|back|list|reload|denyBlock|denyBlockList>
+    permission: city.admin
+permissions:
+  city.admin:
+    description: 城市维度管理权限
+    default: op

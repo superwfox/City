@@ -2,15 +2,11 @@ package sudark2.Sudark.city.Portal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Warden;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
-import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -19,10 +15,11 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static sudark2.Sudark.city.City.*;
-import static sudark2.Sudark.city.World.SecureZone.posPairs;
+import static sudark2.Sudark.city.Util.ChunkUtil.getX;
+import static sudark2.Sudark.city.Util.ChunkUtil.getZ;
+import static sudark2.Sudark.city.World.SecureZone.*;
 
 public class PortalManager implements Listener {
 
@@ -35,14 +32,8 @@ public class PortalManager implements Listener {
             Bukkit.getScheduler().runTaskLater(get(), () -> entity.teleport(getMainWorld().getSpawnLocation()), 1);
             return;
         }
-        int[] chunkLoc;
-        if (posPairs.isEmpty()) chunkLoc = new int[]{0, 0};
-        else
-            chunkLoc = posPairs.get(new Random().nextInt(posPairs.size()));
-        int x = chunkLoc[0] * 16 + 8;
-        int z = chunkLoc[1] * 16 + 8;
-        int y = Bukkit.getWorld(cityName).getHighestBlockYAt(x, z);
-        Location loc = new Location(Bukkit.getWorld(cityName), x, y + 1, z);
+
+        Location loc = getRandomSpawnLocation();
         Bukkit.getScheduler().runTaskLater(get(), () -> entity.teleport(loc), 1);
     }
 
@@ -55,16 +46,23 @@ public class PortalManager implements Listener {
             Bukkit.getScheduler().runTaskLater(get(), () -> pl.teleport(getMainWorld().getSpawnLocation()), 1);
             return;
         }
-        int[] chunkLoc;
-        if (posPairs.isEmpty()) chunkLoc = new int[]{0, 0};
-        else
-            chunkLoc = posPairs.get(new Random().nextInt(posPairs.size()));
 
-        int x = chunkLoc[0] * 16 + 8;
-        int z = chunkLoc[1] * 16 + 8;
-        int y = Bukkit.getWorld(cityName).getHighestBlockYAt(x, z);
-        Location loc = new Location(Bukkit.getWorld(cityName), x, y + 1, z);
+        Location loc = getRandomSpawnLocation();
         Bukkit.getScheduler().runTaskLater(get(), () -> pl.teleport(loc), 1);
+    }
+
+    private Location getRandomSpawnLocation() {
+        int cx = 0, cz = 0;
+        if (!posPairs.isEmpty()) {
+            long[] keys = posPairs.stream().mapToLong(Long::longValue).toArray();
+            long key = keys[new Random().nextInt(keys.length)];
+            cx = getX(key);
+            cz = getZ(key);
+        }
+        int x = cx * 16 + 8;
+        int z = cz * 16 + 8;
+        int y = Bukkit.getWorld(cityName).getHighestBlockYAt(x, z);
+        return new Location(Bukkit.getWorld(cityName), x, y + 1, z);
     }
 
     static ConcurrentHashMap<String, BukkitTask> tasks = new ConcurrentHashMap<>();
@@ -75,7 +73,6 @@ public class PortalManager implements Listener {
         Player pl = e.getPlayer();
 
         if (worldName.equals(templateName)) addTitle(pl);
-
     }
 
     @EventHandler

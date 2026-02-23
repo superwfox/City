@@ -1,90 +1,134 @@
-# City – English Documentation
+﻿# City English README
 
-A daily-reset city survival core plugin specifically written and thoroughly tested for **Mohist 1.20.1**  
-(This version has only been fully tested on Mohist 1.20.1 for three consecutive days under real load. Compatibility with other versions is not guaranteed.)
+[中文说明](README.md)
 
+## Project Overview
+City is a city-survival plugin for `Mohist/Paper 1.20.1`. It uses a dual-world lifecycle:
+- `Template-World`: persistent template world
+- `City-World`: gameplay world rebuilt every day
 
-## City Plugin Commands (All commands are OP-only by default)
+At `04:00` every day, the plugin runs a reset pipeline: copy protected chunks back to the template world, then rebuild `City-World`.
 
-| Command               | Arguments              | Description                                                  |
-|-----------------------|------------------------|--------------------------------------------------------------|
-| `/city save`          | none                   | Marks the current chunk as a safe zone (persists after reset)|
-| `/city cancel`        | none                   | Removes safe-zone protection from the current chunk         |
-| `/city rewards`       | `[page, optional]`     | Opens the global reward pool editor (54 slots, paginated)    |
-| `/city add`           | none (target block)    | Registers the targeted block as a reward chest               |
-| `/city remove`        | none (target chest)    | Unregisters the targeted reward chest                        |
-| `/city allchest`      | none                   | Lists all reward chests with clickable teleport links        |
-| `/city check`         | none                   | Manually enters the city dimension (coordinate mapping)      |
-| `/city back`          | none                   | Returns to the location before entering the city dimension  |
-| `/city reload`        | none                   | Manually triggers full reset + config reload + clears opened chests |
+## Main Features And Structure
+### Main Features
+1. World lifecycle
+- Auto-check and create required worlds at startup.
+- Auto reset `City-World` every day at `04:00`.
+- `/city reload` supports manual reset and data reload.
 
-> Permissions are controlled via `plugin.yml` — all commands require OP by default
+2. Safe-zone persistence
+- `/city save` adds the current chunk to safe zones.
+- `/city cancel` removes the current chunk from safe zones.
+- Safe-zone chunks are copied from `City-World` to `Template-World` before reset.
 
-## Feature Details
+3. Shulker-box reward system
+- Rewards are separated by shulker box type (for example `WHITE_SHULKER_BOX`).
+- `/city rewards [page]` opens the 54-slot paged editor.
+- Opening shulker boxes in `City-World` fills the first 27 slots by configured probability.
+- Each player triggers rewards once per chest location until `/city reload` clears records.
 
-### 1. Daily Automatic Reset
-- Every day at **04:00 real time**, the plugin automatically deletes and rebuilds **City-World** with hot-reload — no server restart required.
-- Before resetting, all protected safe-zone chunks are automatically written back to the template world to preserve buildings.
-- Players online during the reset will be temporarily kicked and can rejoin immediately once the process finishes.
+4. Teleport flow
+- Entering a portal from non-city worlds sends entities to a random safe chunk center in `City-World`.
+- Entering a portal from `City-World` sends entities to main-world spawn.
+- `/city check` maps current coordinates into template world.
+- `/city back` returns to the location saved by `/city check`.
 
-### 2. Safe-Zone System (Chunk Protection)
-- Stand in the desired chunk and run **/city save** → the entire 16×16 chunk is marked as a safe zone.
-- Run **/city cancel** in a protected chunk to remove protection.
-- On every reset, all safe-zone chunks are copied back to the template world and will persist after the next rebuild.
-- Coordinates are stored in `saveZone.txt` (one line per chunk: `chunkX,chunkZ`).
+5. Protection and limits
+- Non-OP players cannot break blocks in safe chunks of `City-World`.
+- Blocks listed in `denyBlocks` are protected when template and city block types match at the same coordinates.
+- Creature spawns are blocked inside safe chunks.
+- Bed interaction in `City-World` is blocked.
 
-### 3. Reward Chest System
-- Admins point at any block and run **/city add** → the block becomes a registered reward chest.
-- **/city remove** while looking at a registered chest deletes it.
-- Chests are automatically placed when their chunk loads.
-- Each player may open every reward chest only once (records persist until manually cleared with **/city reload**).
-- Contents are randomly filled from the global reward pool according to the probability set in config.yml (27 slots).
-- All chest locations are saved in `chestLocs.txt`.
-
-### 4. Global Reward Pool GUI
-- **/city rewards** [page] opens a 54-slot editor (paginated).
-- Drag items in or modify existing ones; changes are saved automatically when the inventory is closed.
-- Unlimited items are supported — additional pages are created automatically.
-- The pool is serialized as Base64 in `rewards.txt`.
-
-### 5. Entity Limit in City Dimension
-- The value `城市维度.刷怪上限` in config.yml caps the total number of living entities in City-World (natural spawns + spawner mobs).
-- Any new entity spawn exceeding the limit is cancelled to prevent lag from entity buildup.
-
-### 6. Dimension Travel Logic
-- Entering from the overworld via Nether portal → teleports to the center-top of a random safe-zone chunk (or 0,0 if none exist).
-- Leaving City-World → returns to the exact coordinates used before entering (fallback to bed spawn or world spawn).
-- **/city check** manually enters the city dimension using template coordinate mapping.
-- **/city back** instantly returns to the last pre-entry location.
-
-### 7. Additional Commands
-- **/city allchest** → lists every registered reward chest with clickable teleport links.
-- **/city reload** → manually triggers a full world reset, reloads all config/files, and clears all “already opened” chest records.
-
-## Configuration (plugins/City/config.yml)
-```yaml
-奖励箱概率.概率值: 500     # 1-1000 (higher = higher chance per slot; 500 ≈ 50%)
-城市维度.刷怪上限: 500     # Maximum entities in City-World (recommended 300-800)
+### Code Structure
+```text
+src/main/java/sudark2/Sudark/city
+├─ City.java
+├─ Clock.java
+├─ FileManager.java
+├─ command/
+│  ├─ CityCommand.java
+│  └─ CommandTabCompleter.java
+├─ World/
+│  ├─ WorldManager.java
+│  ├─ WorldGenerator.java
+│  ├─ SecureZone.java
+│  └─ WorldProtectListener.java
+├─ Portal/
+│  └─ PortalManager.java
+├─ Rewards/
+│  ├─ RewardsManager.java
+│  └─ RewardsListener.java
+├─ File/
+│  ├─ SaveZoneRelatedFles.java
+│  ├─ RewardsRelatedFiles.java
+│  └─ DenyRelatedFiles.java
+└─ Util/
+   ├─ ChunkUtil.java
+   └─ MethodUtil.java
 ```
 
-## Data Files
-**In the plugin folder:**
-- `saveZone.txt` → safe-zone chunk coordinates
-- `chestLocs.txt` → reward chest positions (format: chunkX,chunkZ,relativeX,Y,Z)
-- `rewards.txt` → Base64-encoded reward pool
+## Usage With Examples
+### 1. Build and install
+```bash
+mvn clean package
+```
+Put the built jar into `plugins/` and start the server.
 
-**In the server root:**
-- `Template-World` → permanent void-flat template (do not delete)
-- `City-World` → the active city dimension (rebuilt daily)
+### 2. Recommended first setup
+1. Start the server once so the plugin creates `Template-World`, `City-World`, and `plugins/City/`.
+2. In chunks you want to preserve:
+```mcfunction
+/city save
+```
+3. Hold the target shulker box and edit rewards:
+```mcfunction
+/city rewards 0
+```
+4. Add deny-break blocks if needed:
+```mcfunction
+/city denyBlock add DIAMOND_BLOCK
+```
+5. Reload data once:
+```mcfunction
+/city reload
+```
 
-## Permissions
-All `/city` subcommands are OP-only by default (controlled via plugin.yml).
+### 3. Commands
+| Command | Description |
+|---|---|
+| `/city save` | Add current chunk to safe zones |
+| `/city cancel` | Remove current chunk from safe zones |
+| `/city rewards [page]` | Open rewards page for the shulker type in hand |
+| `/city list` | Print all reward pool entries |
+| `/city check` | Teleport to mapped coordinates in template world |
+| `/city back` | Return to position saved by `/city check` |
+| `/city denyBlock add <MATERIAL>` | Add a protected block type |
+| `/city denyBlock remove <MATERIAL>` | Remove a protected block type |
+| `/city denyBlockList` | Show protected block list |
+| `/city reload` | Reset world, reload files, clear opened-chest records |
 
-## Tested Environment
-- Mohist 1.20.1 (latest official build `mohist-1.20.1-6eb4f67`)
-- Clean environment, 72 consecutive resets over 3 days, zero crashes or data loss
-- Peak concurrent players: 60
+Extra command-block usage:
+```mcfunction
+/city tp <x> <y> <z>
+```
+Teleports nearby players (radius 6) to those coordinates in `City-World`.
 
-For version adaptation or new features, please contact the author **@SudarkX**.
+### 4. Config and data files
+`plugins/City/config.yml` is generated per reward type. Example:
+```yaml
+WHITE_SHULKER_BOX:
+  奖励箱概率:
+    概率值: 500
+    类型: "正整数 [1-1000]"
+    作用: "控制奖励箱每个槽位有多大概率刷出物品"
+    计算公式: "概率值 / 1000"
+```
 
-Thank you for using City!
+Main data files:
+- `plugins/City/saveZone.data`: safe-zone chunk keys (`long` list).
+- `plugins/City/denyBlocks.txt`: deny-break materials (one `Material` per line).
+- `plugins/City/rewardsList/*.yml`: reward pools per shulker type (Base64 serialized).
+
+### 5. Permission
+- Node: `city.admin`
+- Default: `op`

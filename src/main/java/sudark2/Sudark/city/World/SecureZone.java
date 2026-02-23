@@ -5,18 +5,20 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static sudark2.Sudark.city.City.templateName;
+import static sudark2.Sudark.city.Util.ChunkUtil.getX;
+import static sudark2.Sudark.city.Util.ChunkUtil.getZ;
 
 public class SecureZone {
 
-    public static List<int[]> posPairs = new ArrayList<>();
+    public static Set<Long> posPairs = new HashSet<>();
 
-    public static void transferChunks(int[] posPairs, World world) {
-        int chunkX = posPairs[0];
-        int chunkZ = posPairs[1];
+    public static void transferChunks(long chunkKey, World world) {
+        int chunkX = getX(chunkKey);
+        int chunkZ = getZ(chunkKey);
 
         Chunk chunk = Bukkit.getWorld(templateName).getChunkAt(chunkX, chunkZ);
         Chunk srcChunk = world.getChunkAt(chunkX, chunkZ);
@@ -28,6 +30,5 @@ public class SecureZone {
                     chunk.getBlock(x, y, z).setBlockData(state.getBlockData(), false);
                 }
     }
-
 
 }
